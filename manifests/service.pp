@@ -21,6 +21,9 @@
 # [*id*]
 #   The unique ID of the service on the node. Defaults to title.
 #
+# [*meta*]
+#   Meta information map. Available as of consul 1.1.0
+#
 # [*port*]
 #   TCP port the service runs on.
 #
@@ -39,6 +42,7 @@ define consul::service(
   $enable_tag_override = false,
   $ensure              = present,
   $id                  = $title,
+  $meta                = {},
   $port                = undef,
   $service_name        = $title,
   $tags                = [],
@@ -50,6 +54,7 @@ define consul::service(
 
   if versioncmp($consul::version, '1.1.0') >= 0 {
     $override_key = 'enable_tag_override'
+    $_meta = $meta
   } else {
     $override_key = 'enableTagOverride'
   }
@@ -60,6 +65,7 @@ define consul::service(
     'address'           => $address,
     'port'              => $port,
     'tags'              => $tags,
+    'meta'              => $_meta,
     'checks'            => $checks,
     'token'             => $token,
     $override_key       => $enable_tag_override,
